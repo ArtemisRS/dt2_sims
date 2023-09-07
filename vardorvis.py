@@ -30,7 +30,7 @@ class Player:
         max_hit = math.floor(self.str_level * (self.str_bonus + 64) + 320) / 640
         if not self.is_fang:
             return random.randint(0, max_hit)
-        return random.randint(math.floor(.15 * max_hit), math.floor(.85 * max_hit))
+        return random.randint(math.floor(.15 * max_hit), math.ceil(.85 * max_hit))
     
     def get_defence(self):
         return self.def_level
