@@ -51,6 +51,7 @@ class Monster:
         self.defence_scaling = defence_scaling
         self.atk_level = 280
         self.slash_atk = 190
+        self.base_str = 270
         self.num_rolls = 1
         self.atk_speed = 5
         
@@ -70,6 +71,15 @@ class Monster:
     
     def get_attack_roll(self):
         return random.randint(0, self.get_attack_roll_max())
+
+    def get_strength(self):
+        if (self.defence_scaling):
+            return self.base_str + math.floor((self.max_hp - self.current_hp)/self.max_hp * 90)
+        return self.base_str
+
+    def get_damage_roll(self):
+        max_hit = math.floor(((self.get_strength() + 9) * (10 + 64) + 320) / 640)
+        return math.floor(random.randint(0, max_hit) / 4)
 
 def hit(player: Player, monster: Monster):
     def_roll = monster.get_defence_roll()
@@ -99,7 +109,7 @@ def fight(p: Player, m: Monster):
             food_eats += 1
         if tick == next_monster_attack_tick:
             if hit(m, p):
-                dmg = random.randint(0, 10)
+                dmg = m.get_damage_roll()
                 if p.justiciar:
                     reduction = math.ceil(dmg * p.slash_def / 3000)
                     dmg -= reduction
