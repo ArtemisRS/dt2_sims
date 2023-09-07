@@ -15,7 +15,7 @@ class Player:
         self.num_rolls = 2 if is_fang else 1
         self.atk_level = math.floor(118 * 1.2 + 8) # 8 is magic number from jamflex
         self.str_level = math.floor(118 * 1.23 + 8 + 3) # 3 is from attack style TODO
-        self.def_level = math.floor(118 * 1.25 + 9)
+        self.def_level = math.floor(118 * 1.25 + 8)
         self.weapon_speed = 5 # ticks
         self.recoil = recoil
         self.justiciar = justiciar
