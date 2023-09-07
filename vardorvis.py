@@ -2,6 +2,7 @@
 
 import math
 import random
+import statistics
 
 class Player:
     def __init__(self, slash_atk, slash_def, str_bonus, is_fang = True, recoil=False, justiciar = False):
@@ -114,5 +115,17 @@ def fight(p: Player, m: Monster):
     return seconds_to_kill, hit_attempts, food_eats, total_dmg_taken
 
 NUM_SIMS = 5000
-df = pd.DataFrame([fight(Player(141, 343, 156, True, False, True), Monster(700, 215, 65, True)) for i in range(0, NUM_SIMS)])
+# df = pd.DataFrame([fight(Player(141, 343, 156, True, False, True), Monster(700, 215, 65, True)) for i in range(0, NUM_SIMS)])
 
+def main():
+    results = []
+    for i in range(0,NUM_SIMS):
+        player = Player(141,343, 156, True, False, True)
+        monster = Monster(700, 215, 65, True)
+        results.append(fight(player, monster))
+    avg = statistics.mean([res[0] for res in results])
+    print(f"{avg}")
+
+
+if __name__ == "__main__":
+    main()
