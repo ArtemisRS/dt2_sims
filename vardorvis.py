@@ -5,7 +5,7 @@ import random
 import statistics
 
 class Player:
-    def __init__(self, slash_atk, slash_def, str_bonus, is_fang = True, recoil=False, justiciar = False):
+    def __init__(self, slash_atk, slash_def, str_bonus, is_fang = True, recoil=False, justiciar = False, bf = False):
         self.slash_atk = slash_atk
         self.slash_def = slash_def
         self.max_hp = 99
@@ -19,6 +19,7 @@ class Player:
         self.weapon_speed = 5 # ticks
         self.recoil = recoil
         self.justiciar = justiciar
+        self.bf = bf
         
     def get_attack_roll_max(self):
         return self.atk_level * (self.slash_atk + 64)
@@ -40,6 +41,18 @@ class Player:
         
     def get_defence_roll(self):
         return random.randint(0, self.get_defence_roll_max())
+
+    def get_bf_heal(self, damage):
+        if random.randint(1,5) < 5:
+            return 0
+        return math.floor(damage * 3 / 10)
+
+    def use_bf(self, damage):
+        new_hp = self.current_hp + self.get_bf_heal(damage)
+        if self.max_hp < new_hp:
+            self.current_hp = self.max_hp
+        else:
+            self.current_hp = new_hp
     
         
 class Monster:
@@ -95,6 +108,7 @@ def fight(p: Player, m: Monster):
     next_player_attack_tick = p.weapon_speed
     next_monster_attack_tick = m.atk_speed
     tick = 0
+    bf_charges = 0
     
     while m.current_hp > 0:
         if tick == next_player_attack_tick:
@@ -102,6 +116,9 @@ def fight(p: Player, m: Monster):
             if hit(p, m):
                 damage = p.get_damage_roll()
                 m.current_hp -= p.get_damage_roll()
+                if p.bf:
+                    p.use_bf(damage)
+                    bf_charges += 1
             next_player_attack_tick += p.weapon_speed
         elif p.current_hp <= 30:
             p.current_hp += 20 # eat a shark 
@@ -122,7 +139,7 @@ def fight(p: Player, m: Monster):
         tick += 1
     
     seconds_to_kill = tick * .6
-    return seconds_to_kill, hit_attempts, food_eats, total_dmg_taken
+    return seconds_to_kill, hit_attempts, food_eats, total_dmg_taken, bf_charges
 
 NUM_SIMS = 5000
 # df = pd.DataFrame([fight(Player(141, 343, 156, True, False, True), Monster(700, 215, 65, True)) for i in range(0, NUM_SIMS)])
@@ -130,11 +147,17 @@ NUM_SIMS = 5000
 def main():
     results = []
     for i in range(0,NUM_SIMS):
-        player = Player(141,343, 156, True, False, True)
+        player = Player(141, 343, 156, True, False, True, True)
         monster = Monster(700, 215, 65, True)
         results.append(fight(player, monster))
-    avg = statistics.mean([res[0] for res in results])
-    print(f"{avg}")
+    ttk = statistics.mean([res[0] for res in results])
+    food_eats = statistics.mean([res[2] for res in results])
+    dmg_taken = statistics.mean([res[3] for res in results])
+    bf_charges = statistics.mean([res[4] for res in results])
+    print(f"ttk: {ttk}")
+    print(f"food: {food_eats}")
+    print(f"dmg: {dmg_taken}")
+    print(f"bf: {bf_charges}")
 
 
 if __name__ == "__main__":
