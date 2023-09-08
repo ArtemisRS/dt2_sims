@@ -28,7 +28,7 @@ class Player:
         return random.randint(0, self.get_attack_roll_max())
     
     def get_damage_roll(self):
-        max_hit = math.floor(self.str_level * (self.str_bonus + 64) + 320) / 640
+        max_hit = math.floor((self.str_level * (self.str_bonus + 64) + 320) / 640)
         if not self.is_fang:
             return random.randint(0, max_hit)
         return random.randint(math.floor(.15 * max_hit), math.ceil(.85 * max_hit))
